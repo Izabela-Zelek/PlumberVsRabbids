@@ -28,10 +28,12 @@ using namespace std;
 /// Shroom Soup - mario can replenish some health
 /// </summary>
 
+Plumber player;
+Rabbid rabbids[10];
 
 int main(void)
 {
-	Plumber player;
+	rabbids[m_currentEnemy].generateHealth();
 
 	cout << "Please choose a brother: \n0 - Morgan\n1 - Lorcan\n";
 	cin >> m_chosenChar;
@@ -53,9 +55,13 @@ int main(void)
 	//the game loop, enemies will spawn as long as the player doesn't have all achievements
 	while (m_numAchievements < M_MAX_ACHIEVEMENTS)
 	{
+		int enemyHealth = rabbids[m_currentEnemy].healthShow();
+		cout << enemyHealth<< "\n";
 		player.healthShow();
 		player.xpShow();
 		player.playerChoice();
+		rabbids[m_currentEnemy].receiveDamage();
+	
 		//rabbids turn
 
 		//player.move();
@@ -75,9 +81,11 @@ void Plumber::receiveDamage()
 {
 }
 
-void Plumber::healthShow()
+int Plumber::healthShow()
 {
-	cout << showName() << "'s health - " << m_health << "\n";
+	cout << showName() << "'s health - " << m_health << "	";
+
+	return 0;
 }
 
 void Plumber::xpShow()
@@ -116,18 +124,91 @@ void Plumber::playerChoice()
 	}
 	else
 	{
+		system("Cls");
 		playerChoice();
 	}
 }
 
 void Plumber::melee()
 {
+	system("Cls");
+	int choice = -1;
+	cout << "Melee:\n0 - Stomp\n1 - Uppercut\n2 - Wrench\n3 - Groundpound\n4 - Cape Slash\n5 - Saw Surprise\n6 - Mr Nose-it-all\n";
+	cin >> choice;
+	
+	if (choice <= 6)
+	{
+		cout << m_name << m_meleeAttack[choice] << "\n";
+		m_damageGiven = rand() % M_MAX_MELEE;
+		cout << m_damageGiven;
+		system("Pause");
+		system("Cls");
+	}
+	else
+	{
+		melee();
+	}
 }
-
+/// Defense:
+/// Cape parry - cape acts as a shield and gives half the damage back to the rabbit (can only be used against melee)
+/// Starman - mario receives no damage if the attack is an ability
+/// Shroom Soup - mario can replenish some health
+/// </summary>
 void Plumber::defense()
 {
-}
+	system("Cls");
+	int choice = -1;
+	cout << "Defense:\n0 - Cape Parry\n1 - Starman\n2 - Shroom Soup\n";
+	cin >> choice;
 
+	if (choice <= 2)
+	{
+		cout << m_name << m_defenseAttack[choice] << "\n";
+		m_damageGiven = rand() % 10;
+		cout << m_damageGiven;
+		system("Pause");
+		system("Cls");
+	}
+	else
+	{
+		defense();
+	}
+} 
 void Plumber::abilities()
 {
+	system("Cls");
+	int choice = -1;
+	cout << "Abilities:\n0 - Carrot Yeet\n1 - Bow and Carrot\n2 - Carrot Temptation\n3 - Carrot Trap\n4 - CarrotCake\n";
+	cin >> choice;
+
+	if (choice <= 4)
+	{
+		cout << m_name << m_abilityAttack[choice] << "\n";
+		m_damageGiven = rand() % M_MAX_ABILITY + M_MIN_ABILITY;
+		cout << m_damageGiven << "\n";
+		system("Pause");
+		system("Cls");
+	}
+	else
+	{
+		abilities();
+	}
+
+}
+
+void Rabbid::receiveDamage()
+{
+	m_health -= m_damageGiven;
+	if (m_health <= 0)
+	{
+		cout << "Rabbid defeated!\n";
+		m_enemyAlive[m_currentEnemy] = false;
+		m_currentEnemy++;
+		rabbids[m_currentEnemy].generateHealth();
+	}
+}
+
+void Rabbid::generateHealth()
+{
+	m_health = rand() % 20 + 50;
 }
