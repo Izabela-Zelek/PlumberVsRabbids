@@ -3,30 +3,6 @@
 
 using namespace std;
 
-///Melee:
-/// 
-/// Plunger - rabbid whacks mario with a toiler plunger
-/// Shark Attack - Rabbid will cosplay as a shark and bite player
-/// Now-you-see-me - Rabbid sticks plunger on player's face, leave round shaped bruises
-/// Bunny Baton - Player got a parking ticket! Officer Rabbid isn't happy
-/// Overcooked!!! rabbit burns food, italian plumber can't accept this
-/// Bunny Boulder
-/// 
-
-/// <summary>
-/// Abilities
-/// Plunger Gun - uses a gun to shoot plungers
-/// Boutta Steal - Rabbid can steal one of player's turns
-/// Siren's Song - Rabbit will 'sing' badly and give Player a headache
-/// Energy Drink - Rabbit mutates and squashes player by sitting on them
-/// Tactical Ruse - Rabbit cosplays as princess plum, player facepalms so hard they hurt themself
-/// 
-/// 
-/// Defense:
-/// Sonic Waves- Rabbit plays guitar, half the damage from player, minimal damage to player
-/// Peeling Good - Rabbit eats a banana and slips on the peel, avoids damage, heals
-/// Dough A Deer - Rabbit rolls out some pizza dough and hides under it. Shield against abilities
-/// 
 int main(void)
 {
 	Game gameScreen;
@@ -35,34 +11,36 @@ int main(void)
 	cin.get();
 }
 
-
+/// <summary>
+/// takes into consideration special defenses when calculating damage
+/// </summary>
 void Game::calculateDamage()
 {
 	if (m_capeUsed)
 	{
 		if (modeRabbit == 0)
 		{
+			m_damageToRabbit = m_damageReceived / 2;
 			m_damageReceived = 0;
-			m_damageGiven = m_damageGiven / 2;
 		}
 	}
 	if (m_starUsed)
 	{
 		if (modeRabbit == 2)
 		{
-			m_damageReceived = 0;
+			m_damageToRabbit = 0;
 		}
 	}
 	
+	enemies[m_currentEnemy]->receiveDamage();
+	player.receiveDamage();
 }
 
+/// <summary>
+/// main game loop and the starter storyline
+/// </summary>
 void Game::game()
 {
-
-	int character;
-	cout << "Please choose a character: \n 0 - Plumbers\n 1 - Rabbids\n";
-	cin >> character;
-
 	for (int i = 0; i < M_MAX_ENEMY; i++)
 	{
 		enemies[i] = new Rabbid;
@@ -170,8 +148,8 @@ void Plumber::melee()
 	if (choice <= 6)
 	{
 		cout << m_name << m_meleeAttack[choice] << "\n";
-		m_damageGiven = rand() % M_MAX_MELEE;
-		cout << "Rabbit loses " << m_damageGiven << " health\n";
+		m_damageToRabbit = rand() % M_MAX_MELEE;
+		cout << "Rabbit loses " << m_damageToRabbit << " health\n";
 		system("Pause");
 		system("Cls");
 	}
@@ -187,10 +165,10 @@ void Plumber::defense()
 {
 	system("Cls");
 	int choice = -1;
-	cout << "Defense:\n0 - Cape Parry\n1 - Starman\n2 - Shroom Soup\n";
+	cout << "Defense:\n0 - Cape Parry\n1 - Starman\n2 - Shroom Soup\n3 - Go Back\n";
 	cin >> choice;
 
-	if (choice <= 2)
+	if (choice <= 3)
 	{
 		
 		system("Pause");
@@ -201,7 +179,7 @@ void Plumber::defense()
 		case 0:
 			if (m_capeAmount == 0)
 			{
-				cout <<"Cape not available.";
+				cout <<"Cape not available.\n";
 				defense();
 				break;
 			}
@@ -209,14 +187,14 @@ void Plumber::defense()
 			{
 				cout << m_name << m_defenseAttack[choice] << "\n";
 				m_capeUsed = true;
-				cout << "Cape Equipped!";
+				cout << "Cape Equipped!\n";
 				m_capeAmount--;
 			}
 			break;
 		case 1:
 			if (m_starAmount == 0)
 			{
-				cout <<"Star not available.";
+				cout <<"Star not available.\n";
 				defense();
 				break;
 			}
@@ -224,14 +202,14 @@ void Plumber::defense()
 			{
 				cout << m_name << m_defenseAttack[choice] << "\n";
 				m_starUsed = true;
-				cout << "Star Equipped!";
+				cout << "Star Equipped!\n";
 				m_starAmount--;
 			}
 			break;
 		case 2:
 			if (m_soupAmount <= 0)
 			{
-				cout << "Soup not available.";
+				cout << "Soup not available.\n";
 				defense();
 				break;
 			}
@@ -241,6 +219,9 @@ void Plumber::defense()
 				m_health = M_MAX_HEALTH;
 				m_soupAmount--;
 			}
+			break;
+		case 3:
+			playerChoice();
 			break;
 		default:
 			break;
@@ -267,8 +248,8 @@ void Plumber::abilities()
 	if (choice <= 4)
 	{
 		cout << m_name << m_abilityAttack[choice] << "\n";
-		m_damageGiven = rand() % M_MAX_ABILITY + M_MIN_ABILITY;
-		cout << "Rabbit loses " << m_damageGiven << " health\n";
+		m_damageToRabbit = rand() % M_MAX_ABILITY + M_MIN_ABILITY;
+		cout << "Rabbit loses " << m_damageToRabbit << " health\n";
 		system("Pause");
 		system("Cls");
 	}
@@ -288,16 +269,30 @@ void Plumber::turn()
 	player.playerChoice();
 
 }
+
+/// <summary>
+/// takes away damage from player health
+/// </summary>
+void Plumber::receiveDamage()
+{
+	m_health -= m_damageReceived;
+}
+
+/// <summary>
+/// processes damage and generates new character
+/// </summary>
 void Rabbid::receiveDamage()
 {
 
-	m_health -= m_damageGiven;
+	m_health -= m_damageToRabbit;
+	
 	if (m_health <= 0)
 	{
 		cout << "Rabbid defeated!\n";
 		m_enemyAlive[m_currentEnemy] = false;
 		m_currentEnemy++;
-		enemies[m_currentEnemy]->generateHealth();
+		m_health = m_normHealth;
+		cout << "New enemy located!\n";
 		if (m_enemyAlive[M_MAX_ENEMY - 1] == false)
 		{
 			for (int i = 0; i < M_MAX_ENEMY; i++)
@@ -308,7 +303,9 @@ void Rabbid::receiveDamage()
 			m_currentEnemy = 0;
 		}
 	}
-
+	cout << "Rabbit is now at " << m_health << " health.\n";
+	system("Pause");
+	system("Cls");
 }
 /// <summary>
 /// Randomly generates rabbit health
@@ -316,6 +313,7 @@ void Rabbid::receiveDamage()
 void Rabbid::generateHealth()
 {
 	m_health = rand() % 20 + 50;
+	m_normHealth = m_health;
 }
 
 /// <summary>
@@ -323,8 +321,8 @@ void Rabbid::generateHealth()
 /// </summary>
 void Rabbid::rabbidChoice()
 {
-	cout << m_health << endl;
-	int randChoice = 0;//rand() % 3;
+	
+	int randChoice = 2;//rand() % 3;
 	if (randChoice == 0)
 	{
 		melee();
@@ -410,6 +408,7 @@ void Rabbid::turn()
 
 
 /// <summary>
+/// PLUMBER
 ///these attacks will all be using carrots as the point is to overfeed the rabbits til they're too full to fight
 /// Melee: 
 /// Stomp - mario jumps on the rabbit's head
@@ -432,3 +431,30 @@ void Rabbid::turn()
 /// Starman - mario receives no damage if the attack is an ability
 /// Shroom Soup - mario can replenish some health
 /// </summary>
+/// 
+/// 
+/// RABBID
+///Melee:
+/// 
+/// Plunger - rabbid whacks mario with a toiler plunger
+/// Shark Attack - Rabbid will cosplay as a shark and bite player
+/// Now-you-see-me - Rabbid sticks plunger on player's face, leave round shaped bruises
+/// Bunny Baton - Player got a parking ticket! Officer Rabbid isn't happy
+/// Overcooked!!! rabbit burns food, italian plumber can't accept this
+/// Bunny Boulder
+/// 
+
+/// <summary>
+/// Abilities
+/// Plunger Gun - uses a gun to shoot plungers
+/// Boutta Steal - Rabbid can steal one of player's turns
+/// Siren's Song - Rabbit will 'sing' badly and give Player a headache
+/// Energy Drink - Rabbit mutates and squashes player by sitting on them
+/// Tactical Ruse - Rabbit cosplays as princess plum, player facepalms so hard they hurt themself
+/// 
+/// 
+/// Defense:
+/// Sonic Waves- Rabbit plays guitar, half the damage from player, minimal damage to player
+/// Peeling Good - Rabbit eats a banana and slips on the peel, avoids damage, heals
+/// Dough A Deer - Rabbit rolls out some pizza dough and hides under it. Shield against abilities
+/// 

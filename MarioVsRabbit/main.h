@@ -8,7 +8,7 @@ const int M_MAX_ACHIEVEMENTS = 30;
 const int M_MAX_ENEMY = 10;
 int m_chosenChar;
 int m_numAchievements = 0;
-int m_damageGiven;
+int m_damageToRabbit;
 int m_damageReceived;
 
 int m_capeAmount = 1;
@@ -50,15 +50,7 @@ string m_abilityRabbid[5]{ "Rabbit uses gun! Plungers shoot out and hit you in t
 
 string m_defenseRabbid[3]{ "Rabbit is a guitar virtuoso. The sonic waves knock you back, half your damage was shielded, you took damage.",
 						  "Rabbit eats a banana, and dumps the peel on the ground. He then proceeds to slip on it, avoiding your attack. Rabbit was healed",
-						  "Rabbit takes out their trusted rolling pin and rolls out some pizza dough. He hides under it, abilities are blocked for 1 turn." };
-
-	///Melee:
-/// 
-/// Plunger - rabbid whacks mario with a toiler plunger
-/// Shark Attack - Rabbid will cosplay as a shark and bite player
-/// Now-you-see-me - Rabbid sticks plunger on player's face, leave round shaped bruises
-/// Bunny Baton - Player got a parking ticket! Officer Rabbid isn't happy
-/// 
+						  "Rabbit takes out their trusted rolling pin and rolls out some pizza dough. He hides under it, abilities are blocked for 1 turn." }; 
 
 class Character {
 public:
@@ -84,13 +76,14 @@ public:
 	void defense();
 	void abilities();
 	void turn();
+	void receiveDamage();
 
 private:
-	const int M_MAX_HEALTH = 50;
-	const int M_MAX_MELEE = 11;
-	const int M_MAX_ABILITY = 20;
+	const int M_MAX_HEALTH = 50; //max health for the player
+	const int M_MAX_MELEE = 11; //used for generating random damage
+	const int M_MAX_ABILITY = 20; 
 	const int M_MIN_ABILITY = 10;
-	string m_name = "";
+	string m_name = ""; //stores chosen character
 	int m_health = M_MAX_HEALTH;
 	int m_xp = 0;
 };
@@ -108,6 +101,7 @@ public:
 
 private:
 	int m_health;
+	int m_normHealth;
 	const int M_MAX_MELEE = 8;
 	const int M_MAX_ABILITY = 10;
 	const int M_MIN_ABILITY = 5;
