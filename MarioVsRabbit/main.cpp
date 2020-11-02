@@ -2,11 +2,15 @@
 #include "main.h"
 
 using namespace std;
+
 ///Melee:
 /// 
 /// Plunger - rabbid whacks mario with a toiler plunger
 /// Shark Attack - Rabbid will cosplay as a shark and bite player
 /// Now-you-see-me - Rabbid sticks plunger on player's face, leave round shaped bruises
+/// Bunny Baton - Player got a parking ticket! Officer Rabbid isn't happy
+/// Overcooked!!! rabbit burns food, italian plumber can't accept this
+/// Bunny Boulder
 /// 
 
 /// <summary>
@@ -17,10 +21,54 @@ using namespace std;
 /// Energy Drink - Rabbit mutates and squashes player by sitting on them
 /// Tactical Ruse - Rabbit cosplays as princess plum, player facepalms so hard they hurt themself
 /// 
+/// 
+/// Defense:
+/// Sonic Waves- Rabbit plays guitar, half the damage from player, minimal damage to player
+/// Peeling Good - Rabbit eats a banana and slips on the peel, avoids damage, heals
+/// Dough A Deer - Rabbit rolls out some pizza dough and hides under it. Shield against abilities
+/// 
 int main(void)
 {
-	rabbids[m_currentEnemy].generateHealth();
+	Game gameScreen;
 
+	gameScreen.game();
+	cin.get();
+}
+
+
+void Game::calculateDamage()
+{
+	if (m_capeUsed)
+	{
+		if (modeRabbit == 0)
+		{
+			m_damageReceived = 0;
+			m_damageGiven = m_damageGiven / 2;
+		}
+	}
+	if (m_starUsed)
+	{
+		if (modeRabbit == 2)
+		{
+			m_damageReceived = 0;
+		}
+	}
+	
+}
+
+void Game::game()
+{
+
+	int character;
+	cout << "Please choose a character: \n 0 - Plumbers\n 1 - Rabbids\n";
+	cin >> character;
+
+	for (int i = 0; i < M_MAX_ENEMY; i++)
+	{
+		enemies[i] = new Rabbid;
+	}
+
+	enemies[m_currentEnemy]->generateHealth();
 	cout << "Please choose a brother: \n0 - Morgan\n1 - Lorcan\n";
 	cin >> m_chosenChar;
 
@@ -36,21 +84,17 @@ int main(void)
 	{
 		player.addName("Lorcan");
 		cout << "Invalid number, Lorcan was chosen automatically\n";
+		system("Pause");
 	}
 	system("cls");
 	//the game loop, enemies will spawn as long as the player doesn't have all achievements
 	while (m_numAchievements < M_MAX_ACHIEVEMENTS)
 	{
 		player.turn();
-		rabbids[m_currentEnemy].turn();
-		//player.move();
-		//player.receiveDamage();
+		enemies[m_currentEnemy]->turn();
+		calculateDamage();
+		
 	}
-	cin.get();
-}
-
-void Plumber::receiveDamage()
-{
 }
 /// <summary>
 /// Displays the player's health on screen
@@ -148,9 +192,60 @@ void Plumber::defense()
 
 	if (choice <= 2)
 	{
-		cout << m_name << m_defenseAttack[choice] << "\n";
-		m_damageGiven = rand() % 10;
-		cout << "Rabbit loses " << m_damageGiven << " health\n";
+		
+		system("Pause");
+		system("Cls");
+
+		switch (choice)
+		{
+		case 0:
+			if (m_capeAmount == 0)
+			{
+				cout <<"Cape not available.";
+				defense();
+				break;
+			}
+			else
+			{
+				cout << m_name << m_defenseAttack[choice] << "\n";
+				m_capeUsed = true;
+				cout << "Cape Equipped!";
+				m_capeAmount--;
+			}
+			break;
+		case 1:
+			if (m_starAmount == 0)
+			{
+				cout <<"Star not available.";
+				defense();
+				break;
+			}
+			else
+			{
+				cout << m_name << m_defenseAttack[choice] << "\n";
+				m_starUsed = true;
+				cout << "Star Equipped!";
+				m_starAmount--;
+			}
+			break;
+		case 2:
+			if (m_soupAmount <= 0)
+			{
+				cout << "Soup not available.";
+				defense();
+				break;
+			}
+			else
+			{
+				cout << m_name << m_defenseAttack[choice] << "\n";
+				m_health = M_MAX_HEALTH;
+				m_soupAmount--;
+			}
+			break;
+		default:
+			break;
+		}
+
 		system("Pause");
 		system("Cls");
 	}
@@ -193,28 +288,27 @@ void Plumber::turn()
 	player.playerChoice();
 
 }
-/// <summary>
-/// calculates the remaining health of the rabbits and makes new enemy
-/// </summary>
 void Rabbid::receiveDamage()
 {
+
 	m_health -= m_damageGiven;
 	if (m_health <= 0)
 	{
 		cout << "Rabbid defeated!\n";
 		m_enemyAlive[m_currentEnemy] = false;
 		m_currentEnemy++;
-		rabbids[m_currentEnemy].generateHealth();
+		enemies[m_currentEnemy]->generateHealth();
 		if (m_enemyAlive[M_MAX_ENEMY - 1] == false)
 		{
 			for (int i = 0; i < M_MAX_ENEMY; i++)
 			{
 				m_enemyAlive[i] == true;
-				rabbids[i].generateHealth();
+				enemies[i]->generateHealth();
 			}
 			m_currentEnemy = 0;
 		}
 	}
+
 }
 /// <summary>
 /// Randomly generates rabbit health
@@ -229,7 +323,8 @@ void Rabbid::generateHealth()
 /// </summary>
 void Rabbid::rabbidChoice()
 {
-	int randChoice = rand() % 3;
+	cout << m_health << endl;
+	int randChoice = 0;//rand() % 3;
 	if (randChoice == 0)
 	{
 		melee();
@@ -253,37 +348,51 @@ void Rabbid::rabbidChoice()
 /// </summary>
 void Rabbid::melee()
 {
+	modeRabbit = 0;
+	system("Cls");
+	int abChoice = rand() % 7;
+
+	cout << m_meleeRabbid[abChoice] << "\n";
+
+	m_damageReceived = rand() % M_MAX_MELEE;
+	system("Pause");
+	system("Cls");
 }
+
+
+
 /// <summary>
 /// generates what defense the rabbid uses
 /// </summary>
 void Rabbid::defense()
 {
+	modeRabbit = 1;
+	system("Cls");
+	int abChoice = rand() % 3;
+
+	cout << m_defenseRabbid[abChoice] << "\n";
+
+	system("Pause");
+	system("Cls");
 }
-/// Abilities
-/// Plunger Gun - uses a gun to shoot plungers
-/// Boutta Steal - Rabbid can steal one of player's turns
-/// Siren's Song - Rabbit will 'sing' badly and give Player a headache
-/// Energy Drink - Rabbit mutates and squashes player by sitting on them
-/// Tactical Ruse - Rabbit cosplays as princess plum, player facepalms so hard they hurt themself
-/// 
+
 /// <summary>
 /// generates what ability attack the rabbid uses
 /// </summary>
 void Rabbid::abilities()
 {
+	modeRabbit = 2;
 	system("Cls");
 	int abChoice = rand() % 5;
 
 	cout << m_abilityRabbid[abChoice] << "\n";
-	
-		//m_damageGiven = rand() % M_MAX_ABILITY + M_MIN_ABILITY;
-		//cout << "Rabbit lost " << m_damageGiven << " health\n";
-	system("Pause");
+
 	if (abChoice == 1)
 	{
 		turn();
 	}
+	m_damageReceived = rand() % M_MAX_ABILITY + M_MIN_ABILITY;
+	system("Pause");
 	system("Cls");
 	
 }
@@ -293,12 +402,7 @@ void Rabbid::abilities()
 /// </summary>
 void Rabbid::turn()
 {
-	rabbids[m_currentEnemy].receiveDamage();
-	int enemyHealth = rabbids[m_currentEnemy].healthShow();
-	cout << "Rabbit's health is now at " << enemyHealth << "\n";
 	rabbidChoice();
-	system("Pause");
-	system("Cls");
 }
 
 
