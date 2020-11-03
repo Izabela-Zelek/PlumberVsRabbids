@@ -21,6 +21,9 @@ int m_soupAmount = 0;
 
 int modeRabbit = -1; 
 
+int m_xp = 0;
+int m_coins = 0;
+
 static int m_currentEnemy = 0;
 bool m_enemyAlive[M_MAX_ENEMY]{ true,true,true,true,true,true,true,true,true,true };
 
@@ -69,6 +72,7 @@ class Plumber : public Character {
 public:
 	int healthShow();
 	void xpShow();
+	void moneyShow();
 	void addName(string t_name);
 	string showName();
 	void playerChoice();
@@ -85,7 +89,6 @@ private:
 	const int M_MIN_ABILITY = 10;
 	string m_name = ""; //stores chosen character
 	int m_health = M_MAX_HEALTH;
-	int m_xp = 0;
 };
 
 class Rabbid : public Character {
@@ -113,6 +116,16 @@ public:
 
 	void calculateDamage();
 	void game();
+	void shop();
+
+	string items[7]{ "Book O'Magic","Multi-tool","Cake Batter","Frail Bow","Shroom Soup","1Up Star","Cape" };
+	int prices[7]{ 10,12,15,18,20,24,27 };
+	
+	
+	
+	string descriptions[7]; //TO BE FINISHED
+
+
 };
 	
 

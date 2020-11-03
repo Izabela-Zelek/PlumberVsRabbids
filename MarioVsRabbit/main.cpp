@@ -44,7 +44,9 @@ void Game::game()
 	for (int i = 0; i < M_MAX_ENEMY; i++)
 	{
 		enemies[i] = new Rabbid;
+		enemies[i]->generateHealth();
 	}
+
 
 	enemies[m_currentEnemy]->generateHealth();
 	cout << "Please choose a brother: \n0 - Morgan\n1 - Lorcan\n";
@@ -53,17 +55,28 @@ void Game::game()
 	if (m_chosenChar == 0)
 	{
 		player.addName("Morgan");
+		m_capeAmount = 1;
+		m_starAmount = 1;
+		m_soupAmount = 2;
 	}
 	else if (m_chosenChar == 1)
 	{
 		player.addName("Lorcan");
+		m_capeAmount = 2;
+		m_starAmount = 2;
+		m_soupAmount = 4;
 	}
 	else
 	{
 		player.addName("Lorcan");
 		cout << "Invalid number, Lorcan was chosen automatically\n";
+		m_capeAmount = 2;
+		m_starAmount = 2;
+		m_soupAmount = 4;
 		system("Pause");
 	}
+
+
 	system("cls");
 	//the game loop, enemies will spawn as long as the player doesn't have all achievements
 	while (m_numAchievements < M_MAX_ACHIEVEMENTS)
@@ -73,6 +86,11 @@ void Game::game()
 		calculateDamage();
 		
 	}
+}
+void Game::shop()
+{
+	system("Cls");
+	cout << <<
 }
 /// <summary>
 /// Displays the player's health on screen
@@ -90,6 +108,10 @@ int Plumber::healthShow()
 void Plumber::xpShow()
 {
 	cout << showName() << "'s XP -  " << m_xp << "\n";
+}
+void Plumber::moneyShow()
+{
+	cout << showName() << "'s money -  " << m_coins << "\n";
 }
 /// <summary>
 /// Used to confirm player's chosen character
@@ -112,9 +134,10 @@ string Plumber::showName()
 /// </summary>
 void Plumber::playerChoice()
 {
+	Game shop;
 	int action;
 
-	cout << "Please choose " << showName() << "'s action:\n0 - Melee\n1 - Defense\n2 - Ability\n";
+	cout << "Please choose " << showName() << "'s action:\n0 - Melee\n1 - Defense\n2 - Ability\n3 - Shop";
 	cin >> action;
 
 	if (action == 0)
@@ -128,6 +151,10 @@ void Plumber::playerChoice()
 	else if (action == 2)
 	{
 		abilities();
+	}
+	else if (action == 3)
+	{
+		shop.shop();
 	}
 	else
 	{
@@ -266,6 +293,7 @@ void Plumber::turn()
 {
 	player.healthShow();
 	player.xpShow();
+	player.moneyShow();
 	player.playerChoice();
 
 }
@@ -283,12 +311,14 @@ void Plumber::receiveDamage()
 /// </summary>
 void Rabbid::receiveDamage()
 {
-
 	m_health -= m_damageToRabbit;
 	
 	if (m_health <= 0)
 	{
 		cout << "Rabbid defeated!\n";
+		m_xp += 25;
+		m_coins += 6;
+		cout << "You have gained 25 XP and 6 coins\n";
 		m_enemyAlive[m_currentEnemy] = false;
 		m_currentEnemy++;
 		m_health = m_normHealth;
@@ -322,7 +352,7 @@ void Rabbid::generateHealth()
 void Rabbid::rabbidChoice()
 {
 	
-	int randChoice = 2;//rand() % 3;
+	int randChoice = rand() % 3;
 	if (randChoice == 0)
 	{
 		melee();
