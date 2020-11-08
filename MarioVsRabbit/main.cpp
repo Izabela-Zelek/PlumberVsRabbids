@@ -49,7 +49,7 @@ void Game::game()
 
 
 	enemies[m_currentEnemy]->generateHealth();
-	cout << "Please choose a brother: \n0 - Morgan\n1 - Lorcan\n";
+	cout << "Please choose a brother: \n0 - Morgan [Starts off with bare minimum of items]\n1 - Lorcan [Starts off with twice the amount of items\n";
 	cin >> m_chosenChar;
 
 	if (m_chosenChar == 0)
@@ -79,18 +79,83 @@ void Game::game()
 
 	system("cls");
 	//the game loop, enemies will spawn as long as the player doesn't have all achievements
-	while (m_numAchievements < M_MAX_ACHIEVEMENTS)
+	while (m_playerAlive)
 	{
 		player.turn();
 		enemies[m_currentEnemy]->turn();
 		calculateDamage();
 		
 	}
+
+	cout << "You have died :(. Please relaunch game to start again. :)" << std::endl;
 }
 void Game::shop()
 {
 	system("Cls");
-	cout << <<
+	int doRedo = 0;
+	int shopChoice = -1;
+	cout << "*A very obviously dressed up Rabbid shows up* Greetings, traveller. I'm sure I have something up to your liking.\n";
+	cout << "0 - Exit\n1 - Shroom Soup [20 c]\n2 - 1Up Star [24 c]\n3 - Cape [27 c]\n";
+	cin >> shopChoice;
+
+	switch (shopChoice)
+	{
+	case 0:
+		break;
+	case 1:
+		cout << items[shopChoice - 1] << " was chosen.\n";
+		if (m_coins >= prices[shopChoice - 1])
+		{
+			m_soupAmount++;
+			m_coins -= prices[shopChoice - 1];
+			cout << "You now have " << m_coins << " coins.\n";
+		}
+		else
+		{
+			cout << "You do not have enough coins to complete this purchase.\n";
+			doRedo = 1;
+		}
+		system("Pause");
+	break;
+	case 2:
+		cout << items[shopChoice - 1] << " was chosen.\n";
+		if (m_coins >= prices[shopChoice - 1])
+		{
+			m_soupAmount++;
+			m_coins -= prices[shopChoice - 1];
+			cout << "You now have " << m_coins << " coins.\n";
+		}
+		else
+		{
+			cout << "You do not have enough coins to complete this purchase.\n";
+			doRedo = 1;
+		}
+		system("Pause");
+		break;
+	case 3:
+		cout << items[shopChoice - 1] << " was chosen.\n";
+		if (m_coins >= prices[shopChoice - 1])
+		{
+			m_soupAmount++;
+			m_coins -= prices[shopChoice - 1];
+			cout << "You now have " << m_coins << " coins.\n";
+		}
+		else
+		{
+			cout << "You do not have enough coins to complete this purchase.\n";
+			doRedo = 1;
+		}
+		system("Pause");
+		break;
+	default:
+		break;
+	}
+
+	if (doRedo == 1)
+	{
+		shop();
+	}
+
 }
 /// <summary>
 /// Displays the player's health on screen
@@ -137,7 +202,7 @@ void Plumber::playerChoice()
 	Game shop;
 	int action;
 
-	cout << "Please choose " << showName() << "'s action:\n0 - Melee\n1 - Defense\n2 - Ability\n3 - Shop";
+	cout << "Please choose " << showName() << "'s action:\n0 - Melee\n1 - Defense\n2 - Ability\n3 - Shop\n";
 	cin >> action;
 
 	if (action == 0)
@@ -192,7 +257,7 @@ void Plumber::defense()
 {
 	system("Cls");
 	int choice = -1;
-	cout << "Defense:\n0 - Cape Parry\n1 - Starman\n2 - Shroom Soup\n3 - Go Back\n";
+	cout << "Defense:\n0 - Cape Parry["<<m_capeAmount << "]\n1 - Starman[" <<m_starAmount <<"]\n2 - Shroom Soup["<<m_soupAmount<<"]\n3 - Go Back\n";
 	cin >> choice;
 
 	if (choice <= 3)
@@ -207,6 +272,7 @@ void Plumber::defense()
 			if (m_capeAmount == 0)
 			{
 				cout <<"Cape not available.\n";
+				system("Pause");
 				defense();
 				break;
 			}
@@ -222,6 +288,7 @@ void Plumber::defense()
 			if (m_starAmount == 0)
 			{
 				cout <<"Star not available.\n";
+				system("Pause");
 				defense();
 				break;
 			}
@@ -237,6 +304,7 @@ void Plumber::defense()
 			if (m_soupAmount <= 0)
 			{
 				cout << "Soup not available.\n";
+				system("Pause");
 				defense();
 				break;
 			}
@@ -268,17 +336,33 @@ void Plumber::defense()
 void Plumber::abilities()
 {
 	system("Cls");
+	int reDo = 0;
 	int choice = -1;
-	cout << "Abilities:\n0 - Carrot Yeet\n1 - Bow and Carrot\n2 - Carrot Temptation\n3 - Carrot Trap\n4 - CarrotCake\n";
+	cout << "Abilities:\n0 - Carrot Yeet[" << abilityPrices[0] <<"]\n1 - Bow and Carrot[" << abilityPrices[1]<<"]\n2 - Carrot Temptation[" << abilityPrices[2]<<"]\n3 - Carrot Trap["<<abilityPrices[3] <<"]\n4 - CarrotCake["<<abilityPrices[4] <<"]\n5 - Exit\n";
 	cin >> choice;
 
 	if (choice <= 4)
 	{
-		cout << m_name << m_abilityAttack[choice] << "\n";
-		m_damageToRabbit = rand() % M_MAX_ABILITY + M_MIN_ABILITY;
-		cout << "Rabbit loses " << m_damageToRabbit << " health\n";
-		system("Pause");
+		if (m_xp >= abilityPrices[choice])
+		{
+			m_xp -= abilityPrices[choice];
+			cout << m_name << m_abilityAttack[choice] << "\n";
+			m_damageToRabbit = rand() % M_MAX_ABILITY + M_MIN_ABILITY;
+			cout << "Rabbit loses " << m_damageToRabbit << " health\n";
+			system("Pause");
+			system("Cls");
+		}
+		else
+		{
+			cout << "You do not have the required XP amount.\n";
+			system("Pause");
+			abilities();
+		}
+	}
+	else if (choice == 5)
+	{
 		system("Cls");
+		playerChoice();
 	}
 	else
 	{
@@ -291,10 +375,17 @@ void Plumber::abilities()
 /// </summary>
 void Plumber::turn()
 {
-	player.healthShow();
-	player.xpShow();
-	player.moneyShow();
-	player.playerChoice();
+	if (m_health > 0)
+	{
+		player.healthShow();
+		player.xpShow();
+		player.moneyShow();
+		player.playerChoice();
+	}
+	else
+	{
+		m_playerAlive = false;
+	}
 
 }
 
@@ -317,8 +408,8 @@ void Rabbid::receiveDamage()
 	{
 		cout << "Rabbid defeated!\n";
 		m_xp += 25;
-		m_coins += 6;
-		cout << "You have gained 25 XP and 6 coins\n";
+		m_coins += 8;
+		cout << "You have gained 25 XP and 8 coins\n";
 		m_enemyAlive[m_currentEnemy] = false;
 		m_currentEnemy++;
 		m_health = m_normHealth;
@@ -327,7 +418,7 @@ void Rabbid::receiveDamage()
 		{
 			for (int i = 0; i < M_MAX_ENEMY; i++)
 			{
-				m_enemyAlive[i] == true;
+				m_enemyAlive[i] = true;
 				enemies[i]->generateHealth();
 			}
 			m_currentEnemy = 0;
@@ -361,14 +452,9 @@ void Rabbid::rabbidChoice()
 	{
 		defense();
 	}
-	else if (randChoice == 2)
-	{
-		abilities();
-	}
 	else
 	{
-		system("Cls");
-		rabbidChoice();
+		abilities();
 	}
 }
 /// <summary>
@@ -417,6 +503,7 @@ void Rabbid::abilities()
 
 	if (abChoice == 1)
 	{
+		system("Pause");
 		turn();
 	}
 	m_damageReceived = rand() % M_MAX_ABILITY + M_MIN_ABILITY;

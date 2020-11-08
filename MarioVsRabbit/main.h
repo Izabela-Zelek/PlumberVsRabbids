@@ -4,10 +4,10 @@
 
 using namespace std;
 
-const int M_MAX_ACHIEVEMENTS = 30;
 const int M_MAX_ENEMY = 10;
 int m_chosenChar;
-int m_numAchievements = 0;
+bool m_playerAlive = true;
+
 int m_damageToRabbit;
 int m_damageReceived;
 
@@ -89,6 +89,7 @@ private:
 	const int M_MIN_ABILITY = 10;
 	string m_name = ""; //stores chosen character
 	int m_health = M_MAX_HEALTH;
+	int abilityPrices[5]{10,14,16,21,23};
 };
 
 class Rabbid : public Character {
@@ -118,8 +119,8 @@ public:
 	void game();
 	void shop();
 
-	string items[7]{ "Book O'Magic","Multi-tool","Cake Batter","Frail Bow","Shroom Soup","1Up Star","Cape" };
-	int prices[7]{ 10,12,15,18,20,24,27 };
+	string items[3]{"Shroom Soup","1Up Star","Cape" };
+	int prices[3]{20,24,27 };
 	
 	
 	
