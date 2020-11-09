@@ -23,15 +23,42 @@ void Game::calculateDamage()
 			m_damageToRabbit = m_damageReceived / 2;
 			m_damageReceived = 0;
 		}
+		m_capeUsed = false;
 	}
 	if (m_starUsed)
 	{
 		if (modeRabbit == 2)
 		{
-			m_damageToRabbit = 0;
+			m_damageReceived = 0;
 		}
+		m_starUsed = false;
+	}
+
+	if (m_sonicUsed)
+	{
+		if (playerMode == 0)
+		{
+			m_damageToRabbit = m_damageToRabbit / 2;
+			m_damageReceived = m_damageToRabbit / 2;
+		}
+		m_sonicUsed = false;
+	}
+
+	if (m_peelingUsed)
+	{
+		m_damageToRabbit = 0;
+		m_peelingUsed = false;
 	}
 	
+	if (m_doughUsed)
+	{
+		if (playerMode == 2)
+		{
+			m_damageToRabbit = 0;
+		}
+		m_doughUsed = false;
+	}
+
 	enemies[m_currentEnemy]->receiveDamage();
 	player.receiveDamage();
 }
@@ -88,6 +115,9 @@ void Game::game()
 	}
 
 	cout << "You have died :(. Please relaunch game to start again. :)" << std::endl;
+	player.xpShow();
+	player.moneyShow();
+	cout << "\nRabbits Defeated: " << m_enemiesDefeated << "\n";
 }
 void Game::shop()
 {
@@ -176,7 +206,7 @@ void Plumber::xpShow()
 }
 void Plumber::moneyShow()
 {
-	cout << showName() << "'s money -  " << m_coins << "\n";
+	cout << showName() << "'s money -  " << m_coins << "	";
 }
 /// <summary>
 /// Used to confirm player's chosen character
@@ -207,14 +237,17 @@ void Plumber::playerChoice()
 
 	if (action == 0)
 	{
+		playerMode = 0;
 		melee();
 	}
 	else if (action == 1)
 	{
+		playerMode = 1;
 		defense();
 	}
 	else if (action == 2)
 	{
+		playerMode = 2;
 		abilities();
 	}
 	else if (action == 3)
@@ -380,6 +413,7 @@ void Plumber::turn()
 		player.healthShow();
 		player.xpShow();
 		player.moneyShow();
+		cout << "Rabbits Defeated: " << m_enemiesDefeated << "\n";
 		player.playerChoice();
 	}
 	else
@@ -407,6 +441,7 @@ void Rabbid::receiveDamage()
 	if (m_health <= 0)
 	{
 		cout << "Rabbid defeated!\n";
+		m_enemiesDefeated++;
 		m_xp += 25;
 		m_coins += 8;
 		cout << "You have gained 25 XP and 8 coins\n";
@@ -482,9 +517,24 @@ void Rabbid::defense()
 {
 	modeRabbit = 1;
 	system("Cls");
-	int abChoice = rand() % 3;
+	int abChoice =  rand() % 3;
 
 	cout << m_defenseRabbid[abChoice] << "\n";
+	switch (abChoice)
+	{
+	case 0:
+		m_sonicUsed = true;
+		break;
+	case 1:
+		m_health = m_normHealth;
+		m_peelingUsed = true;
+		break;
+	case 2:
+		m_doughUsed = true;
+		break;
+	default:
+		break;
+	}
 
 	system("Pause");
 	system("Cls");
