@@ -1,3 +1,5 @@
+//Izabela Zelek
+//C00247865
 #include <iostream>
 #include "main.h"
 
@@ -105,6 +107,24 @@ void Game::game()
 
 
 	system("cls");
+
+	cout << "You've always been a very dedicated plumber. Always done on time and without leaks. You are simply, one of the best. Or at least you were...\n";
+	cout << "All of a sudden these... bunny-eared plumber wannabes showed up and took your jobs. I mean seriously, what kind of self-respected plumber works for free?!?!\n";
+	cout << "It's time to show these fakers, who the real Plumber Boss is.\n";
+	system("Pause");
+	system("cls");
+
+	cout << "Your mission is simple. Defeat the vermin and take back your well-earned title.\n";
+	cout << "Take down as many of them as you can before they take you down.\n";
+	cout << "Viva la revolution!\n";
+	cout << "                      /|      __\n*             +      / |   ,-~ /             +\n";
+	cout << "     .              Y :|  //  /                .         *\n         .          | jj /( .^     *\n";
+	cout << "               *    >-'~'-v'              .        *        .\n*                  /       Y\n";
+
+	cout << "   .     .        jo  o    |     .            +\n                 ( ~T~     j                     +     .\n";
+	cout << " -----------------------------\n";
+	system("Pause");
+	system("cls");
 	//the game loop, enemies will spawn as long as the player doesn't have all achievements
 	while (m_playerAlive)
 	{
@@ -114,11 +134,20 @@ void Game::game()
 		
 	}
 
-	cout << "You have died :(. Please relaunch game to start again. :)" << std::endl;
+	cout << "You have died :(. Please relaunch game to start again. :)\n";
 	player.xpShow();
 	player.moneyShow();
 	cout << "\nRabbits Defeated: " << m_enemiesDefeated << "\n";
+	cout << "                      /|      __\n*             +      / |   ,-~ /             +\n";
+	cout << "     .              Y :|  //  /                .         *\n         .          | jj /( .^     *\n";
+	cout << "               *    >-'~'-v'              .        *        .\n*                  /       Y\n";
+
+	cout << "   .     .        jo  o    |     .            +\n                 ( ~T~     j                     +     .\n";
+	cout << " -----------------------------\n" << std::endl;
 }
+/// <summary>
+/// the player can open the shop during a battle, however, they lose a turn when they choose it
+/// </summary>
 void Game::shop()
 {
 	system("Cls");
@@ -225,7 +254,7 @@ string Plumber::showName()
 	return m_name;
 }
 /// <summary>
-/// Asks player what option they would want to choose in battle
+/// Asks player what option they would want to choose in battle and then sends them to the appropriate function
 /// </summary>
 void Plumber::playerChoice()
 {
